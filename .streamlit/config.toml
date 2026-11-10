@@ -1,0 +1,10 @@
+# Configuração do Streamlit para o dashboard (poetry run task dashboard).
+
+[server]
+# Não pergunta e-mail na primeira execução nem tenta abrir o navegador sozinho.
+# Acesse a URL exibida no terminal (padrão: http://localhost:8501).
+headless = true
+
+[browser]
+# Não envia estatísticas de uso para o Streamlit.
+gatherUsageStats = false
