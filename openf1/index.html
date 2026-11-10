@@ -1,0 +1,1872 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação técnica do pipeline ETL de dados históricos da Fórmula 1 (OpenF1)">
+      
+      
+      
+      
+        <link rel="prev" href="../arquitetura/">
+      
+      
+        <link rel="next" href="../referencia/api/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>API OpenF1 - Fórmula 1 ETL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#openf1-api-resumo" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="Fórmula 1 ETL" class="md-header__button md-logo" aria-label="Fórmula 1 ETL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Fórmula 1 ETL
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API OpenF1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/carlalerisse/F-rmula_1" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../instalacao/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Instalação
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../uso/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Uso
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../dashboard/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../arquitetura/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Arquitetura
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API OpenF1
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../referencia/api/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Referência da API
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Fórmula 1 ETL" class="md-nav__button md-logo" aria-label="Fórmula 1 ETL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Fórmula 1 ETL
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/carlalerisse/F-rmula_1" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instalacao/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Uso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arquitetura/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitetura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API OpenF1
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API OpenF1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-visao-geral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Visão geral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-formatos-e-filtros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Formatos e filtros
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-chaves-e-hierarquia-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Chaves e hierarquia dos dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tabela-resumo-dos-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tabela-resumo dos endpoints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-detalhe-por-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Detalhe por endpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Detalhe por endpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#meetings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        meetings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sessions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drivers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#car_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        car_data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        location
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#laps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        laps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        intervals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#race_control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        race_control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weather" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        weather
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#team_radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        team_radio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overtakes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        overtakes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session_result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        session_result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting_grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        starting_grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#championship_drivers-beta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        championship_drivers (beta)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#championship_teams-beta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        championship_teams (beta)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-tempo-real-autenticado-pago" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Tempo real (autenticado, pago)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-limitacoes-e-depreciacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Limitações e depreciações
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-exemplo-rapido-em-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Exemplo rápido em Python
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-links-uteis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Links úteis
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../referencia/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referência da API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-visao-geral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Visão geral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-formatos-e-filtros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Formatos e filtros
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-chaves-e-hierarquia-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Chaves e hierarquia dos dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tabela-resumo-dos-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tabela-resumo dos endpoints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-detalhe-por-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Detalhe por endpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Detalhe por endpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#meetings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        meetings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sessions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drivers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        drivers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#car_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        car_data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        location
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#laps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        laps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intervals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        intervals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        position
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#race_control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        race_control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weather" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        weather
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#team_radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        team_radio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overtakes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        overtakes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session_result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        session_result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting_grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        starting_grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#championship_drivers-beta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        championship_drivers (beta)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#championship_teams-beta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        championship_teams (beta)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-tempo-real-autenticado-pago" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Tempo real (autenticado, pago)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-limitacoes-e-depreciacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Limitações e depreciações
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-exemplo-rapido-em-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Exemplo rápido em Python
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-links-uteis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Links úteis
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="openf1-api-resumo">OpenF1 API: resumo<a class="headerlink" href="#openf1-api-resumo" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Fonte: <a href="https://openf1.org/docs/#api-endpoints">https://openf1.org/docs/#api-endpoints</a> e <a href="https://openf1.org/auth.html">https://openf1.org/auth.html</a>.
+A OpenF1 é um projeto <strong>não oficial</strong>, sem vínculo com as empresas da Fórmula 1.</p>
+</blockquote>
+<hr />
+<h2 id="1-visao-geral">1. Visão geral<a class="headerlink" href="#1-visao-geral" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URL base</td>
+<td><code>https://api.openf1.org/v1/&lt;endpoint&gt;</code></td>
+</tr>
+<tr>
+<td>Dados históricos</td>
+<td>De <strong>2023 em diante</strong>, <strong>gratuitos</strong> e <strong>sem autenticação</strong></td>
+</tr>
+<tr>
+<td>Dados em tempo real</td>
+<td>Exigem <strong>assinatura paga</strong> e autenticação (ver seção 6)</td>
+</tr>
+<tr>
+<td>Formato padrão</td>
+<td>JSON</td>
+</tr>
+<tr>
+<td>Formato alternativo</td>
+<td>CSV, adicionando <code>csv=true</code> à query</td>
+</tr>
+<tr>
+<td>Limites de taxa</td>
+<td>A página não dá números. Com autenticação, o limite é maior.</td>
+</tr>
+<tr>
+<td>Preços</td>
+<td>Não informados na documentação</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-formatos-e-filtros">2. Formatos e filtros<a class="headerlink" href="#2-formatos-e-filtros" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>CSV:</strong> <code>https://api.openf1.org/v1/sessions?year=2023&amp;csv=true</code></li>
+<li><strong>Filtro por atributo:</strong> coloque o atributo na query string. Qualquer atributo pode ser filtrado, <strong>menos arrays</strong>.</li>
+<li><strong>Operadores:</strong> <code>=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code></li>
+<li>Exemplos: <code>lap_duration&gt;=120</code>, <code>position&lt;=3</code>, <code>interval&gt;0</code></li>
+<li>Também podem ir codificados na URL, por exemplo <code>%3E%3D</code> para <code>&gt;=</code>.</li>
+<li><strong>Vários valores:</strong> repita a chave, como em <code>driver_number=4&amp;driver_number=81</code>.</li>
+<li><strong>Datas:</strong></li>
+<li>Intervalo: <code>date&gt;=2023-09-01&amp;date&lt;2023-09-30</code>.</li>
+<li>A API aceita formatos que o <code>dateutil.parser.parse</code> do Python entende, como <code>2021-09-10T14:30:20+00:00</code> ou <code>10 September 2021</code>.</li>
+<li>Todas as datas estão em <strong>UTC</strong>.</li>
+<li><strong><code>latest</code>:</strong> use <code>session_key=latest</code> ou <code>meeting_key=latest</code> para pegar a sessão ou o evento mais recente.</li>
+<li><strong>Espaços:</strong> codifique como <code>%20</code>, por exemplo <code>session_name=Sprint%20Qualifying</code>.</li>
+</ul>
+<hr />
+<h2 id="3-chaves-e-hierarquia-dos-dados">3. Chaves e hierarquia dos dados<a class="headerlink" href="#3-chaves-e-hierarquia-dos-dados" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>meeting (fim de semana de GP ou testes)   -&gt; meeting_key
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  └── session (TL1, Quali, Sprint, Corrida...)   -&gt; session_key
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        └── dados por piloto   -&gt; driver_number
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>              (car_data, laps, pit, stints, position, location...)
+</code></pre></div>
+<ul>
+<li><strong><code>meeting_key</code></strong> identifica o fim de semana.</li>
+<li><strong><code>session_key</code></strong> identifica cada sessão.</li>
+<li><strong><code>driver_number</code></strong> é o número do carro.</li>
+<li>Quase todos os endpoints trazem <code>meeting_key</code> e <code>session_key</code>, o que permite cruzar os dados (joins).</li>
+</ul>
+<hr />
+<h2 id="4-tabela-resumo-dos-endpoints">4. Tabela-resumo dos endpoints<a class="headerlink" href="#4-tabela-resumo-dos-endpoints" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Descrição</th>
+<th>Frequência / observação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>meetings</code></td>
+<td>Fins de semana de GP ou testes</td>
+<td>Atualizado diariamente à 00:00 UTC</td>
+</tr>
+<tr>
+<td><code>sessions</code></td>
+<td>Sessões de um fim de semana</td>
+<td>Atualizado diariamente à 00:00 UTC</td>
+</tr>
+<tr>
+<td><code>drivers</code></td>
+<td>Pilotos de uma sessão</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>car_data</code></td>
+<td>Telemetria do carro</td>
+<td>~3,7 Hz</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td>Posição aproximada (x, y, z) na pista</td>
+<td>~3,7 Hz</td>
+</tr>
+<tr>
+<td><code>laps</code></td>
+<td>Dados de cada volta</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>intervals</code></td>
+<td>Gap para o líder e para o carro da frente</td>
+<td>~4 s, só em corridas</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td>Posição do piloto ao longo da sessão</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>pit</code></td>
+<td>Passagens pelo pit lane</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>stints</code></td>
+<td>Stints e pneus</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>race_control</code></td>
+<td>Bandeiras, safety car, incidentes</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>weather</code></td>
+<td>Clima na pista</td>
+<td>A cada minuto</td>
+</tr>
+<tr>
+<td><code>team_radio</code></td>
+<td>Rádio entre piloto e equipe</td>
+<td>Cobertura limitada (muito reduzida em 2026)</td>
+</tr>
+<tr>
+<td><code>overtakes</code></td>
+<td>Ultrapassagens / trocas de posição</td>
+<td>Só em corridas; pode estar incompleto</td>
+</tr>
+<tr>
+<td><code>session_result</code></td>
+<td>Resultado final da sessão</td>
+<td>Minutos após o resultado oficial</td>
+</tr>
+<tr>
+<td><code>starting_grid</code></td>
+<td>Grid de largada</td>
+<td>Minutos após o resultado oficial</td>
+</tr>
+<tr>
+<td><code>championship_drivers</code></td>
+<td>Campeonato de pilotos (<strong>beta</strong>)</td>
+<td>Só sessões de corrida</td>
+</tr>
+<tr>
+<td><code>championship_teams</code></td>
+<td>Campeonato de construtores (<strong>beta</strong>)</td>
+<td>Só sessões de corrida</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-detalhe-por-endpoint">5. Detalhe por endpoint<a class="headerlink" href="#5-detalhe-por-endpoint" title="Permanent link">&para;</a></h2>
+<h3 id="meetings"><code>meetings</code><a class="headerlink" href="#meetings" title="Permanent link">&para;</a></h3>
+<p>Um fim de semana de GP ou de testes.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li>Identificação: <code>meeting_key</code>, <code>meeting_name</code>, <code>meeting_official_name</code>, <code>year</code></li>
+<li>Datas: <code>date_start</code>, <code>date_end</code>, <code>gmt_offset</code></li>
+<li>Local: <code>location</code>, <code>country_name</code>, <code>country_code</code>, <code>country_key</code>, <code>country_flag</code></li>
+<li>Circuito: <code>circuit_key</code>, <code>circuit_short_name</code>, <code>circuit_type</code> (Permanent / Temporary - Street / Temporary - Road), <code>circuit_image</code>, <code>circuit_info_url</code></li>
+<li>Outros: <code>is_cancelled</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/meetings?year=2026&amp;country_name=Singapore</code></li>
+</ul>
+<h3 id="sessions"><code>sessions</code><a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h3>
+<p>Cada sessão do fim de semana.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li>Identificação: <code>session_key</code>, <code>meeting_key</code>, <code>year</code></li>
+<li>Tipo: <code>session_name</code> (Practice 1, Qualifying, Race...), <code>session_type</code> (Practice, Qualifying, Race...)</li>
+<li>Datas: <code>date_start</code>, <code>date_end</code>, <code>gmt_offset</code></li>
+<li>Local: <code>location</code>, <code>country_*</code>, <code>circuit_key</code>, <code>circuit_short_name</code></li>
+<li>Outros: <code>is_cancelled</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/sessions?country_name=Belgium&amp;session_name=Sprint%20Qualifying&amp;year=2023</code></li>
+</ul>
+<h3 id="drivers"><code>drivers</code><a class="headerlink" href="#drivers" title="Permanent link">&para;</a></h3>
+<p>Pilotos de uma sessão.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li>Número: <code>driver_number</code></li>
+<li>Nome: <code>first_name</code>, <code>last_name</code>, <code>full_name</code>, <code>broadcast_name</code>, <code>name_acronym</code> (3 letras)</li>
+<li>Equipe: <code>team_name</code>, <code>team_colour</code> (hex), <code>headshot_url</code></li>
+<li>Depreciado: <code>country_code</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/drivers?driver_number=1&amp;session_key=9158</code></li>
+</ul>
+<h3 id="car_data"><code>car_data</code><a class="headerlink" href="#car_data" title="Permanent link">&para;</a></h3>
+<p>Telemetria a cerca de 3,7 Hz.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>date</code>, <code>driver_number</code></li>
+<li><code>speed</code> (km/h), <code>rpm</code>, <code>n_gear</code> (1–8; 0 = neutro)</li>
+<li><code>throttle</code> (%)</li>
+<li><code>brake</code> (0 ou 100)</li>
+<li><code>drs</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/car_data?driver_number=55&amp;session_key=9159&amp;speed&gt;=315</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Valor de <code>drs</code></th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0, 1</td>
+<td>DRS desligado</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Detectado, elegível ao entrar na zona</td>
+</tr>
+<tr>
+<td>10, 12, 14</td>
+<td>DRS ligado</td>
+</tr>
+<tr>
+<td>2, 3, 9</td>
+<td>Desconhecido</td>
+</tr>
+</tbody>
+</table>
+<h3 id="location"><code>location</code><a class="headerlink" href="#location" title="Permanent link">&para;</a></h3>
+<p>Posição aproximada do carro (x, y, z) a cerca de 3,7 Hz.</p>
+<ul>
+<li>Mostra o progresso ao longo da pista, mas não a posição lateral.</li>
+<li>A origem (0, 0, 0) é arbitrária.</li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/location?session_key=9161&amp;driver_number=81&amp;date&gt;2023-09-16T13:03:35.200&amp;date&lt;2023-09-16T13:03:35.800</code></li>
+</ul>
+<h3 id="laps"><code>laps</code><a class="headerlink" href="#laps" title="Permanent link">&para;</a></h3>
+<p>Dados de cada volta.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li>Volta: <code>lap_number</code> (começa em 1), <code>date_start</code> (aproximado), <code>lap_duration</code></li>
+<li>Setores: <code>duration_sector_1</code>, <code>duration_sector_2</code>, <code>duration_sector_3</code></li>
+<li>Velocidades: <code>i1_speed</code>, <code>i2_speed</code> (pontos intermediários), <code>st_speed</code> (speed trap)</li>
+<li><code>is_pit_out_lap</code></li>
+<li>Mini-setores: <code>segments_sector_1</code>, <code>segments_sector_2</code>, <code>segments_sector_3</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/laps?session_key=9161&amp;driver_number=63&amp;lap_number=8</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Valor de segmento</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Indisponível</td>
+</tr>
+<tr>
+<td>2048</td>
+<td>Amarelo</td>
+</tr>
+<tr>
+<td>2049</td>
+<td>Verde</td>
+</tr>
+<tr>
+<td>2051</td>
+<td>Roxo</td>
+</tr>
+<tr>
+<td>2064</td>
+<td>Pit lane</td>
+</tr>
+<tr>
+<td>2050, 2052, 2068</td>
+<td>Desconhecido</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Os segmentos não estão disponíveis em corridas, e as cores podem não bater com as da TV.</p>
+</blockquote>
+<h3 id="intervals"><code>intervals</code><a class="headerlink" href="#intervals" title="Permanent link">&para;</a></h3>
+<p>Gaps durante a corrida, atualizados a cada ~4 s. Só existe para sessões de corrida.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>gap_to_leader</code></li>
+<li><code>interval</code> (até o carro da frente)</li>
+<li>Os dois campos vêm em segundos, ou <code>+1 LAP</code> se o piloto estiver uma volta atrás. Para o líder, vêm como <code>null</code>.</li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/intervals?session_key=9165&amp;interval&lt;0.005</code></li>
+</ul>
+<h3 id="position"><code>position</code><a class="headerlink" href="#position" title="Permanent link">&para;</a></h3>
+<p>Posição do piloto ao longo da sessão, incluindo a posição inicial e cada mudança.</p>
+<ul>
+<li><strong>Campos:</strong> <code>date</code>, <code>driver_number</code>, <code>position</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/position?meeting_key=1217&amp;driver_number=40&amp;position&lt;=3</code></li>
+</ul>
+<h3 id="pit"><code>pit</code><a class="headerlink" href="#pit" title="Permanent link">&para;</a></h3>
+<p>Passagens pelo pit lane.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>date</code>, <code>lap_number</code></li>
+<li><code>lane_duration</code> (tempo no pit lane)</li>
+<li><code>stop_duration</code> (tempo parado)</li>
+<li><code>pit_duration</code> (depreciado, igual a <code>lane_duration</code>)</li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/pit?session_key=9877&amp;stop_duration&lt;2.3</code></li>
+</ul>
+<h3 id="stints"><code>stints</code><a class="headerlink" href="#stints" title="Permanent link">&para;</a></h3>
+<p>Períodos de pilotagem contínua.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>stint_number</code>, <code>lap_start</code>, <code>lap_end</code></li>
+<li><code>compound</code> (SOFT, MEDIUM, HARD...)</li>
+<li><code>tyre_age_at_start</code> (voltas que o pneu já tinha no início do stint)</li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/stints?session_key=9165&amp;tyre_age_at_start&gt;=3</code></li>
+</ul>
+<h3 id="race_control"><code>race_control</code><a class="headerlink" href="#race_control" title="Permanent link">&para;</a></h3>
+<p>Mensagens da direção de prova.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>category</code> (SessionStatus, CarEvent, Drs, Flag, SafetyCar...)</li>
+<li><code>flag</code> (GREEN, YELLOW, DOUBLE YELLOW, CHEQUERED...)</li>
+<li><code>scope</code> (Track, Driver, Sector...)</li>
+<li><code>sector</code>, <code>lap_number</code>, <code>qualifying_phase</code></li>
+<li><code>message</code>, <code>driver_number</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/race_control?flag=BLACK%20AND%20WHITE&amp;driver_number=1&amp;date&gt;=2023-01-01&amp;date&lt;2023-09-01</code></li>
+</ul>
+<h3 id="weather"><code>weather</code><a class="headerlink" href="#weather" title="Permanent link">&para;</a></h3>
+<p>Clima na pista, atualizado a cada minuto.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>air_temperature</code>, <code>track_temperature</code> (°C)</li>
+<li><code>humidity</code> (%)</li>
+<li><code>pressure</code> (mbar)</li>
+<li><code>rainfall</code></li>
+<li><code>wind_direction</code> (0–359°), <code>wind_speed</code> (m/s)</li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/weather?meeting_key=1208&amp;wind_direction&gt;=130&amp;track_temperature&gt;=52</code></li>
+</ul>
+<h3 id="team_radio"><code>team_radio</code><a class="headerlink" href="#team_radio" title="Permanent link">&para;</a></h3>
+<p>Rádio entre piloto e equipe, com apenas uma seleção das mensagens.</p>
+<ul>
+<li><strong>Campos:</strong> <code>date</code>, <code>driver_number</code>, <code>recording_url</code> (link do áudio)</li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/team_radio?session_key=9158&amp;driver_number=11</code></li>
+</ul>
+<h3 id="overtakes"><code>overtakes</code><a class="headerlink" href="#overtakes" title="Permanent link">&para;</a></h3>
+<p>Trocas de posição em corrida. Inclui as causadas por pit stops e por punições.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>overtaking_driver_number</code>, <code>overtaken_driver_number</code></li>
+<li><code>position</code> (posição de quem ultrapassou, depois da manobra)</li>
+<li><code>date</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/overtakes?session_key=9636&amp;overtaking_driver_number=63&amp;overtaken_driver_number=4&amp;position=1</code></li>
+</ul>
+<h3 id="session_result"><code>session_result</code><a class="headerlink" href="#session_result" title="Permanent link">&para;</a></h3>
+<p>Classificação final da sessão.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>position</code>, <code>number_of_laps</code></li>
+<li><code>duration</code>: melhor volta em treinos, tempo total em corridas, ou array Q1/Q2/Q3 na classificação</li>
+<li><code>gap_to_leader</code>: em segundos ou <code>+N LAP(S)</code>; array na classificação</li>
+<li><code>dnf</code>, <code>dns</code>, <code>dsq</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/session_result?session_key=7782&amp;position&lt;=3</code></li>
+</ul>
+<h3 id="starting_grid"><code>starting_grid</code><a class="headerlink" href="#starting_grid" title="Permanent link">&para;</a></h3>
+<p>Grid de largada.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>position</code> (posição no grid)</li>
+<li><code>lap_duration</code> (volta de classificação)</li>
+<li><code>driver_number</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/starting_grid?session_key=7783&amp;position&lt;=3</code></li>
+</ul>
+<h3 id="championship_drivers-beta"><code>championship_drivers</code> (beta)<a class="headerlink" href="#championship_drivers-beta" title="Permanent link">&para;</a></h3>
+<p>Campeonato de pilotos. Só existe para sessões de corrida.</p>
+<ul>
+<li><strong>Campos:</strong></li>
+<li><code>points_start</code>, <code>points_current</code> (pontos antes e durante/depois da corrida)</li>
+<li><code>position_start</code>, <code>position_current</code></li>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/championship_drivers?session_key=9839&amp;driver_number=4&amp;driver_number=81</code></li>
+</ul>
+<h3 id="championship_teams-beta"><code>championship_teams</code> (beta)<a class="headerlink" href="#championship_teams-beta" title="Permanent link">&para;</a></h3>
+<p>Campeonato de construtores. Tem os mesmos campos de <code>championship_drivers</code>, mas com <code>team_name</code> no lugar de <code>driver_number</code>.</p>
+<ul>
+<li><strong>Exemplo:</strong> <code>https://api.openf1.org/v1/championship_teams?session_key=9839&amp;team_name=McLaren</code></li>
+</ul>
+<hr />
+<h2 id="6-tempo-real-autenticado-pago">6. Tempo real (autenticado, pago)<a class="headerlink" href="#6-tempo-real-autenticado-pago" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Obter o token:</strong> faça um <code>POST https://api.openf1.org/token</code> com <code>username</code> e <code>password</code> em form-encoded.</li>
+<li>A resposta traz <code>access_token</code>, <code>token_type: bearer</code> e <code>expires_in: 3600</code>, ou seja, o token <strong>expira em 1 h</strong>.</li>
+<li><strong>Chamadas REST:</strong> envie o header <code>Authorization: Bearer &lt;token&gt;</code>.</li>
+<li><strong>Streaming (recomendado para dados ao vivo):</strong></li>
+<li><strong>MQTT:</strong> <code>mqtt.openf1.org</code>, porta TLS <code>8883</code>, para backends.</li>
+<li><strong>WebSocket:</strong> <code>wss://mqtt.openf1.org:8084/mqtt</code>, para browsers.</li>
+<li><strong>Usuário:</strong> qualquer string não vazia, ou o seu e-mail.</li>
+<li><strong>Senha:</strong> o token.</li>
+<li><strong>Tópicos:</strong> <code>v1/&lt;endpoint&gt;</code>, por exemplo <code>v1/laps</code> ou <code>v1/location</code>. Use <code>#</code> para receber todos.</li>
+<li><strong>Mensagens:</strong> o mesmo JSON do REST, mais dois campos:<ul>
+<li><code>_id</code>: inteiro crescente, serve para ordenar.</li>
+<li><code>_key</code>: o mesmo valor indica uma versão mais nova do mesmo objeto.</li>
+</ul>
+</li>
+<li><strong>Segurança:</strong> faça a troca de credenciais <strong>no backend</strong>. Nunca exponha usuário, senha ou token no front-end.</li>
+</ol>
+<hr />
+<h2 id="7-limitacoes-e-depreciacoes">7. Limitações e depreciações<a class="headerlink" href="#7-limitacoes-e-depreciacoes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Campos depreciados, que serão <strong>removidos no fim de 2026</strong>:</li>
+<li><code>drivers.country_code</code></li>
+<li><code>pit.pit_duration</code> (use <code>lane_duration</code>)</li>
+<li><code>pit.stop_duration</code>:</li>
+<li>Só existe a partir do <strong>GP dos EUA de 2024</strong>.</li>
+<li>Em 2026, pode faltar ao vivo e ser preenchido horas depois.</li>
+<li><code>team_radio</code> tem cobertura muito reduzida desde 2026, por limitação da própria F1.</li>
+<li><code>overtakes</code> pode estar incompleto.</li>
+<li>Os segmentos de <code>laps</code> não estão disponíveis em corridas.</li>
+<li><code>championship_*</code> está em <strong>beta</strong>.</li>
+<li>A documentação não informa números de rate limit, preços nem termos de uso.</li>
+</ul>
+<hr />
+<h2 id="8-exemplo-rapido-em-python">8. Exemplo rápido em Python<a class="headerlink" href="#8-exemplo-rapido-em-python" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">BASE</span> <span class="o">=</span> <span class="s2">"https://api.openf1.org/v1"</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BASE</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># Corridas de 2024</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">sessions</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="s2">"sessions"</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">2024</span><span class="p">,</span> <span class="n">session_name</span><span class="o">=</span><span class="s2">"Race"</span><span class="p">)</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># Voltas do Verstappen (#1) na primeira corrida da lista</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="n">session_key</span> <span class="o">=</span> <span class="n">sessions</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"session_key"</span><span class="p">]</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="n">laps</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="s2">"laps"</span><span class="p">,</span> <span class="n">session_key</span><span class="o">=</span><span class="n">session_key</span><span class="p">,</span> <span class="n">driver_number</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">laps</span><span class="p">[[</span><span class="s2">"lap_number"</span><span class="p">,</span> <span class="s2">"lap_duration"</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Atenção:</strong> operadores como <code>&gt;=</code> não cabem num dicionário de <code>params</code>. Nesses casos, monte a query manualmente, por exemplo <code>f"{BASE}/laps?session_key={sk}&amp;lap_duration&gt;=90"</code>.</p>
+</blockquote>
+<hr />
+<h2 id="9-links-uteis">9. Links úteis<a class="headerlink" href="#9-links-uteis" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Documentação: <a href="https://openf1.org/docs/">https://openf1.org/docs/</a></li>
+<li>Autenticação e streaming: <a href="https://openf1.org/auth.html">https://openf1.org/auth.html</a></li>
+<li>GitHub: <a href="https://github.com/br-g/openf1">https://github.com/br-g/openf1</a></li>
+<li>Issues: <a href="https://github.com/br-g/openf1/issues">https://github.com/br-g/openf1/issues</a></li>
+<li>Discussions: <a href="https://github.com/br-g/openf1/discussions">https://github.com/br-g/openf1/discussions</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
