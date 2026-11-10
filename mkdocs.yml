@@ -1,0 +1,56 @@
+site_name: Fórmula 1 ETL
+site_description: Documentação técnica do pipeline ETL de dados históricos da Fórmula 1 (OpenF1)
+repo_url: https://github.com/carlalerisse/F-rmula_1
+
+theme:
+  name: material
+  language: pt-BR
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Modo escuro
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Modo claro
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+nav:
+  - Início: index.md
+  - Instalação: instalacao.md
+  - Uso: uso.md
+  - Dashboard: dashboard.md
+  - Testes: testes.md
+  - Arquitetura: arquitetura.md
+  - API OpenF1: openf1.md
+  - Referência da API: referencia/api.md

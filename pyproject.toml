@@ -1,0 +1,132 @@
+[project]
+name = "formula1"
+version = "0.1.0"
+description = "Pipeline ETL que extrai dados históricos da API OpenF1 e grava em Parquet."
+authors = [
+    {name = "Carla Lerisse",email = "carlalerisse.engdados@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "httpx (>=0.28.1,<0.29.0)",
+    "pandas (>=3.1.1,<4.0.0)",
+    "pyarrow (>=26.0.1,<27.0.0)",
+    "streamlit (>=1.67.0,<2.0.0)",
+    "altair (>=6.3.0,<7.0.0)"
+]
+
+[project.scripts]
+formula1 = "formula1.__main__:main"
+
+[tool.poetry]
+packages = [{include = "formula1", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.17.4,<0.18.0)",
+    "pytest (>=9.2.0,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "taskipy (>=1.14.1,<2.0.0)"
+]
+docs = [
+    "mkdocs-material (>=9.8.1,<10.0.0)",
+    "mkdocstrings[python] (>=1.0.8,<2.0.0)"
+]
+
+# ---------------------------------------------------------------------------
+# Taskipy — atalhos: poetry run task <nome>
+# ---------------------------------------------------------------------------
+[tool.taskipy.tasks]
+test = { cmd = "pytest -m \"not integration\"", help = "testes unitários com cobertura (mínimo 50%)" }
+lint = { cmd = "ruff check . && ruff format --check .", help = "lint e verificação de formatação (não altera arquivos)" }
+format = { cmd = "ruff check . --fix && ruff format .", help = "corrige o lint automaticamente e formata o código" }
+docs = { cmd = "mkdocs serve", help = "serve a documentação em http://127.0.0.1:8000" }
+docs-build = { cmd = "mkdocs build --strict", help = "gera o site estático da documentação em site/ (falha em avisos)" }
+dashboard = { cmd = "streamlit run src/formula1/dashboard/app.py", help = "abre o dashboard em http://localhost:8501" }
+top5 = { cmd = "streamlit run dashboard.py", help = "abre só o dashboard das 5 voltas mais rápidas em http://localhost:8501" }
+
+# ---------------------------------------------------------------------------
+# Ruff — lint e formatação
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+src = ["src", "tests"]
+extend-exclude = ["docs", ".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle (erros) — PEP 8
+    "W",    # pycodestyle (avisos) — PEP 8
+    "F",    # Pyflakes — imports/variáveis não usados, nomes indefinidos
+    "I",    # isort — ordenação de imports
+    "N",    # pep8-naming — convenções de nomes
+    "UP",   # pyupgrade — sintaxe moderna do Python
+    "B",    # flake8-bugbear — bugs prováveis
+    "SIM",  # flake8-simplify — simplificações
+    "C4",   # flake8-comprehensions
+    "ANN",  # flake8-annotations — exige type hints
+    "S",    # flake8-bandit — problemas de segurança
+    "PT",   # flake8-pytest-style — boas práticas no Pytest
+    "RET",  # flake8-return
+    "ERA",  # código comentado esquecido
+    "PL",   # Pylint
+    "RUF",  # regras específicas do Ruff
+]
+ignore = [
+    "ANN401",  # permite typing.Any quando realmente necessário
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",     # assert é o padrão nos testes
+    "ANN",      # anotações não são exigidas nos testes
+    "PLR2004",  # valores literais ("magic numbers") são aceitáveis nos testes
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# Pytest + cobertura
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=formula1",
+    "--cov-report=term-missing",
+    "--cov-fail-under=50",
+]
+markers = [
+    "integration: testes que dependem de recursos externos",
+]
+
+[tool.coverage.run]
+source = ["src/formula1"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 50
+show_missing = true
+skip_covered = false
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
