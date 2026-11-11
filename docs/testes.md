@@ -27,7 +27,7 @@ tests/
 | Objetivo | Comando |
 |---|---|
 | Testes unitários (sem rede), com cobertura | `poetry run task test` (atalho de `poetry run pytest -m "not integration"`) |
-| Teste de integração (chamada real e pequena) | `poetry run pytest -m integration` |
+| Teste de integração (chamada real e pequena) | `poetry run pytest -m integration --no-cov` |
 | Todos os testes | `poetry run pytest` |
 | Um arquivo ou teste específico | `poetry run pytest tests/unit/domain/test_transform.py::test_parse_gap_valores_validos -v` |
 
@@ -41,7 +41,9 @@ Os testes unitários são determinísticos e não acessam a rede:
 
 O teste de integração faz uma única consulta real
 (`sessions?year=2023&session_name=Race`) e falha se a API estiver fora do ar.
-Por isso ele fica fora do pipeline padrão de validação.
+Por isso ele fica fora do pipeline padrão de validação. Rode-o com `--no-cov`:
+sozinho, ele não atinge o mínimo de 50% de cobertura, que vale apenas para a
+suíte unitária.
 
 ## Cobertura
 
@@ -98,3 +100,21 @@ Antes de concluir qualquer mudança, rode:
     ```
 
 A tarefa só está concluída se todos os comandos terminarem com sucesso.
+
+## Integração contínua (CI)
+
+O workflow [`.github/workflows/ci.yml`](https://github.com/carlalerisse/F-rmula_1/blob/main/.github/workflows/ci.yml)
+roda o mesmo pipeline no GitHub Actions (Ubuntu, Python do `.python-version`,
+Poetry 2.5.1 com cache das dependências).
+
+| Job | O que faz | Quando roda |
+|---|---|---|
+| **Lock e lint (Ruff)** | `poetry check --lock` e `poetry run task lint` | push e PR em `main`/`dev`, manual |
+| **Testes unitários e cobertura** | `poetry run task test` (falha abaixo de 50%) e publica o `coverage.xml` como artefato | push e PR em `main`/`dev`, manual |
+| **Build da documentação** | `poetry run mkdocs build --strict` | push e PR em `main`/`dev`, manual |
+| **Integração (API OpenF1 real)** | `poetry run pytest -m integration --no-cov` | manual (*Run workflow*) e toda segunda às 06:00 UTC |
+
+Os três primeiros jobs rodam em paralelo e bloqueiam o merge quando falham
+(com a proteção de branch configurada). O de integração não roda em push nem
+em PR, para que instabilidades da API externa não travem o desenvolvimento.
+Execuções antigas do mesmo branch são canceladas quando chega um push novo.
