@@ -1,0 +1,48 @@
+# Hooks de pré-commit: rodam as mesmas verificações da CI antes de cada commit.
+# Instalação (uma vez):  poetry run pre-commit install
+# Rodar manualmente:     poetry run pre-commit run --all-files
+#
+# O Ruff roda como hook local via Poetry, usando a versão travada no poetry.lock
+# (a mesma da CI), em vez de uma versão separada do repositório ruff-pre-commit.
+default_install_hook_types: [pre-commit]
+fail_fast: false
+# data/ guarda respostas brutas da API OpenF1 e artefatos gerados: não alterar.
+exclude: ^data/
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--unsafe] # aceita tags customizadas do mkdocs.yml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024] # evita versionar Parquet/CSV grandes por engano
+      - id: mixed-line-ending # corrige só arquivos com quebras misturadas
+                               # (não força LF, compatível com core.autocrlf)
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check (lint + correções automáticas)
+        entry: poetry run ruff check --fix --exit-non-zero-on-fix
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff format
+        entry: poetry run ruff format
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: poetry-check
+        name: poetry check --lock
+        entry: poetry check --lock
+        language: system
+        files: ^(pyproject\.toml|poetry\.lock)$
+        pass_filenames: false
