@@ -1,6 +1,4 @@
-# Formula_1
-
-[![CI](https://github.com/carlalerisse/F-rmula_1/actions/workflows/ci.yml/badge.svg)](https://github.com/carlalerisse/F-rmula_1/actions/workflows/ci.yml)
+# Fórmula 1
 
 Pipeline ETL que extrai os dados históricos da Fórmula 1 (2023 em diante) da
 [API OpenF1](https://openf1.org/docs/), normaliza os registros e grava tudo
