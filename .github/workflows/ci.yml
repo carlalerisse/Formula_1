@@ -1,0 +1,125 @@
+# Pipeline de CI: reproduz no GitHub Actions o pipeline de validação local
+# (skill §8.5 e docs/testes.md):
+#   poetry check --lock → task lint → task test → mkdocs build --strict
+# O teste de integração (API real da OpenF1) roda só sob demanda ou no
+# agendamento semanal, sem bloquear PRs.
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # segundas, 06:00 UTC (só o teste de integração)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  POETRY_VERSION: "2.5.1"
+  POETRY_VIRTUALENVS_IN_PROJECT: "true"
+  NO_MKDOCS_2_WARNING: "1"
+
+jobs:
+  lint:
+    name: Lock e lint (Ruff)
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Instalar Poetry
+        run: pipx install "poetry==${POETRY_VERSION}"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version-file: .python-version
+          cache: poetry
+
+      - name: Verificar pyproject.toml e poetry.lock
+        run: poetry check --lock
+
+      - name: Instalar dependências (dev)
+        run: poetry sync --only dev --no-root
+
+      - name: Lint e formatação
+        run: poetry run task lint
+
+  test:
+    name: Testes unitários e cobertura
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Instalar Poetry
+        run: pipx install "poetry==${POETRY_VERSION}"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version-file: .python-version
+          cache: poetry
+
+      - name: Instalar dependências (main + dev)
+        run: poetry sync --with dev
+
+      - name: Pytest (cobertura mínima de 50%)
+        run: poetry run task test --cov-report=xml
+
+      - name: Publicar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore
+
+  docs:
+    name: Build da documentação (MkDocs strict)
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Instalar Poetry
+        run: pipx install "poetry==${POETRY_VERSION}"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version-file: .python-version
+          cache: poetry
+
+      - name: Instalar dependências (docs)
+        run: poetry sync --only docs --no-root
+
+      - name: mkdocs build --strict
+        run: poetry run mkdocs build --strict
+
+  integration:
+    name: Integração (API OpenF1 real)
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Instalar Poetry
+        run: pipx install "poetry==${POETRY_VERSION}"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version-file: .python-version
+          cache: poetry
+
+      - name: Instalar dependências (main + dev)
+        run: poetry sync --with dev
+
+      # --no-cov: o teste isolado não atinge os 50% de cobertura, que são
+      # exigidos apenas na suíte unitária.
+      - name: Pytest -m integration
+        run: poetry run pytest -m integration --no-cov

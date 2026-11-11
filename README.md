@@ -1,4 +1,6 @@
-# Fórmula 1
+# Formula_1
+
+[![CI](https://github.com/carlalerisse/F-rmula_1/actions/workflows/ci.yml/badge.svg)](https://github.com/carlalerisse/F-rmula_1/actions/workflows/ci.yml)
 
 Pipeline ETL que extrai os dados históricos da Fórmula 1 (2023 em diante) da
 [API OpenF1](https://openf1.org/docs/), normaliza os registros e grava tudo
@@ -85,7 +87,7 @@ Atalhos definidos com [taskipy](https://github.com/taskipy/taskipy) no `pyprojec
 
 ```bash
 poetry run task test                     # testes unitários, com cobertura mínima de 50%
-poetry run pytest -m integration         # chamada real e pequena à API
+poetry run pytest -m integration --no-cov  # chamada real e pequena à API
 ```
 
 Validação completa (lint, formatação, testes e documentação):
@@ -94,6 +96,9 @@ Validação completa (lint, formatação, testes e documentação):
 poetry check --lock && poetry run ruff check . && poetry run ruff format --check . \
   && poetry run pytest -m "not integration" && poetry run mkdocs build --strict
 ```
+
+O mesmo pipeline roda no GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
+a cada push e pull request em `main` e `dev`. Detalhes dos jobs em [docs/testes.md](docs/testes.md).
 
 ## Documentação
 
